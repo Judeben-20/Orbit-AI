@@ -1,14 +1,29 @@
-import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import { db } from "@/lib/db";
+import { usage } from "@/lib/db/schema";
+import { eq, and } from "drizzle-orm";
 
 export async function GET() {
-  const { userId } = await auth();
-  if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
+  try {
+    const { userId } = await auth();
+    if (!userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
 
-  return NextResponse.json({
-    tokensUsed: 0,
-    runsUsed: 0,
-  });
+    const currentPeriod = new Date().toISOString().substring(0, 7); // YYYY-MM
+
+    const usageRecord = await db.query.usage.findFirst({
+      where: and(eq(usage.userId, userId), eq(usage.period, currentPeriod)),
+    });
+
+    if (!usageRecord) {
+      return NextResponse.json({ tokensUsed: 0, runsUsed: 0 });
+    }
+
+    return NextResponse.json(usageRecord);
+  } catch (error) {
+    console.error("[USAGE_GET]", error);
+    return new NextResponse("Internal Error", { status: 500 });
+  }
 }

@@ -1,4 +1,4 @@
 export const QUOTA_LIMITS = {
   MONTHLY_CHAT_MESSAGES: 200,
   MONTHLY_ROUTINE_RUNS: 30,
-} as const;
+};

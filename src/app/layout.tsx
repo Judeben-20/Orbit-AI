@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Geist } from "next/font/google";
 import { ClerkProvider } from "@clerk/nextjs";
 import { ReactQueryProvider } from "@/components/providers/query-provider";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
@@ -18,7 +21,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en" className={`${inter.variable} light`}>
+      <html lang="en" className={cn("light", inter.variable, "font-sans", geist.variable)}>
         <body className="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen">
           <ReactQueryProvider>{children}</ReactQueryProvider>
         </body>
